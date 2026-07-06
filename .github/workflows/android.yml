@@ -18,7 +18,7 @@ jobs:
         mv project/* .
         rm -rf project project.zip
 
-    # 2. 안드로이드 앱 빌드에 필수적인 리눅스 환경 세팅
+    # 2. 필수적인 리눅스 환경 세팅
     - name: Install System Dependencies
       run: |
         sudo apt-get update
@@ -30,14 +30,20 @@ jobs:
       with:
         python-version: '3.11'
 
-    # 4. 순수 명령어로 빌도저 직접 설치 및 APK 굽기 (주소 에러 절대 없음!)
-    - name: Build APK with Buildozer
+    # 4. 안드로이드 라이선스 약관 자동 동의 세팅 (★이 부분이 추가되었습니다)
+    - name: Accept Android Licenses
       run: |
+        mkdir -p ~/.android
+        touch ~/.android/repositories.cfg
         pip install --upgrade pip
         pip install buildozer cython virtualenv
-        buildozer android debug
 
-    # 5. 완성된 APK 파일 업로드 보관함으로 전송
+    # 5. 빌도저로 APK 굽기 (약관에 자동으로 Y라고 답하게 명령어를 보완했습니다)
+    - name: Build APK with Buildozer
+      run: |
+        yes | buildozer android debug
+
+    # 6. 완성된 APK 파일 업로드 보관함으로 전송
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
       with:
