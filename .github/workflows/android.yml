@@ -11,14 +11,16 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    # 깃허브 서버 안에서 app.zip 압축을 자동으로 푸는 명령어입니다.
-    - name: Unzip app directory
+    # project.zip 압축 해제
+    - name: Unzip project
       run: |
-        unzip app.zip -d .
-        rm app.zip
+        unzip project.zip
+        mv project/* .
+        rm -rf project project.zip
 
+    # ⚠️ 이 부분을 모두 소문자(artemsanya)로 수정했습니다!
     - name: Buildozer Action
-      uses: ArtemSanya/buildozer-action@v1
+      uses: artemsanya/buildozer-action@v1
       with:
         command: buildozer android debug
         repository_root: .
