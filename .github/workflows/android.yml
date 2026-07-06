@@ -11,16 +11,29 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    # project.zip 압축 해제
+    # 1. project.zip 압축 해제
     - name: Unzip project
       run: |
         unzip project.zip
         mv project/* .
         rm -rf project project.zip
 
-    # ⚠️ 이 부분을 모두 소문자(artemsanya)로 수정했습니다!
-    - name: Buildozer Action
-      uses: artemsanya/buildozer-action@v1
+    # 2. 파이썬 및 안드로이드 빌드 환경 세팅
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-validation-error: 'warn'
+
+    # 3. 널리 쓰이는 공식 Buildozer Action 사용
+    - name: Build with Buildozer
+      uses: kivy/buildozer-action@v1
       with:
         command: buildozer android debug
         repository_root: .
+
+    # 4. 완성된 APK 파일 업로드 (여기서 다운받으실 수 있게 됩니다)
+    - name: Upload APK
+      uses: actions/upload-artifact@v3
+      with:
+        name: My-Alarm-App-APK
+        path: bin/*.apk
