@@ -18,27 +18,27 @@ jobs:
         mv project/* .
         rm -rf project project.zip
 
-    # 2. 빌드에 필요한 리눅스 필수 도구들 설치
-    - name: Install dependencies
+    # 2. 안드로이드 앱 빌드에 필수적인 리눅스 환경 세팅
+    - name: Install System Dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y libsqlite3-dev lldd libffi-dev libssl-dev
+        sudo apt-get install -y iproute2 python3-pip build-essential git python3-dev ffmpeg libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev zlib1g-dev libgstreamer1.0-dev gstreamer1.0-plugins-base gstreamer1.0-plugins-good libsqlite3-dev lld libffi-dev libssl-dev autoconf automake libtool pkg-config cmake modules-dev libasound2-dev openjdk-17-jdk unzip
 
-    # 3. 파이썬 및 안드로이드 빌드 환경 세팅 (v4 최신화)
+    # 3. 파이썬 최신 표준 세팅
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.11'
 
-    # 4. 가장 안정적인 최신 깃허브 빌도저 액션 사용
-    - name: Build with Buildozer
-      uses: ActionRepo/buildozer-action@v2
-      with:
-        command: buildozer android debug
-        repository_root: .
+    # 4. 순수 명령어로 빌도저 직접 설치 및 APK 굽기 (주소 에러 절대 없음!)
+    - name: Build APK with Buildozer
+      run: |
+        pip install --upgrade pip
+        pip install buildozer cython virtualenv
+        buildozer android debug
 
-    # 5. 완성된 APK 파일 업로드 (v4 최신 버전으로 교체!)
-    - name: Upload APK
+    # 5. 완성된 APK 파일 업로드 보관함으로 전송
+    - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
       with:
         name: My-Alarm-App-APK
