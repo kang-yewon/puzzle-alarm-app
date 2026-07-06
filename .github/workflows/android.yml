@@ -6,10 +6,10 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     # 1. project.zip 압축 해제
     - name: Unzip project
@@ -18,22 +18,28 @@ jobs:
         mv project/* .
         rm -rf project project.zip
 
-    # 2. 파이썬 및 안드로이드 빌드 환경 세팅
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-validation-error: 'warn'
+    # 2. 빌드에 필요한 리눅스 필수 도구들 설치
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libsqlite3-dev lldd libffi-dev libssl-dev
 
-    # 3. 널리 쓰이는 공식 Buildozer Action 사용
+    # 3. 파이썬 및 안드로이드 빌드 환경 세팅 (v4 최신화)
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    # 4. 가장 안정적인 최신 깃허브 빌도저 액션 사용
     - name: Build with Buildozer
-      uses: kivy/buildozer-action@v1
+      uses: ActionRepo/buildozer-action@v2
       with:
         command: buildozer android debug
         repository_root: .
 
-    # 4. 완성된 APK 파일 업로드 (여기서 다운받으실 수 있게 됩니다)
+    # 5. 완성된 APK 파일 업로드 (v4 최신 버전으로 교체!)
     - name: Upload APK
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: My-Alarm-App-APK
         path: bin/*.apk
