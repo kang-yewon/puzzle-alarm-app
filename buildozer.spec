@@ -1,7 +1,7 @@
 [app]
 title = My Alarm Puzzle App
 package.name = alarmpuzzleapp
-package.domain = org.example
+package.domain = com.myname.alarm
 source.dir = .
 source.include_exts = py,png,jpg,kv,atlas,json
 version = 0.1
