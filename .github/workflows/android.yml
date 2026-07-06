@@ -6,7 +6,8 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    # 가장 에러 없이 빌도저가 잘 돌아가는 우분투 20.04 버전으로 변경했습니다.
+    runs-on: ubuntu-20.04
 
     steps:
     - uses: actions/checkout@v4
@@ -18,29 +19,28 @@ jobs:
         mv project/* .
         rm -rf project project.zip
 
-    # 2. 필수적인 리눅스 환경 세팅
+    # 2. 안드로이드 앱 빌드에 필수적인 리눅스 환경 세팅
     - name: Install System Dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y iproute2 python3-pip build-essential git python3-dev ffmpeg libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev zlib1g-dev libgstreamer1.0-dev gstreamer1.0-plugins-base gstreamer1.0-plugins-good libsqlite3-dev lld libffi-dev libssl-dev autoconf automake libtool pkg-config cmake modules-dev libasound2-dev openjdk-17-jdk unzip
 
-    # 3. 파이썬 최신 표준 세팅
+    # 3. 가장 호환성이 좋은 파이썬 3.9 버전으로 고정합니다.
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.11'
+        python-version: '3.9'
 
-    # 4. 안드로이드 라이선스 약관 자동 동의 세팅 (★이 부분이 추가되었습니다)
-    - name: Accept Android Licenses
+    # 4. 가상 환경 충돌 방지 세팅
+    - name: Pre-install Build Tools
       run: |
-        mkdir -p ~/.android
-        touch ~/.android/repositories.cfg
         pip install --upgrade pip
-        pip install buildozer cython virtualenv
+        pip install "cython<3.0.0" virtualenv
 
-    # 5. 빌도저로 APK 굽기 (약관에 자동으로 Y라고 답하게 명령어를 보완했습니다)
+    # 5. 빌도저로 APK 굽기 (약관 자동 동의 및 강제 실행)
     - name: Build APK with Buildozer
       run: |
+        pip install buildozer
         yes | buildozer android debug
 
     # 6. 완성된 APK 파일 업로드 보관함으로 전송
